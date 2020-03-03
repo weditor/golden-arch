@@ -1,0 +1,11 @@
+.vscode/
+.idea/
+.mypy_cache/
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.pyc
+*.pyo
+db.sqlite3
+test.txt
