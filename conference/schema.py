@@ -45,44 +45,6 @@ class ConferenceMutation(DjangoModelFormMutation):
         form_class = ConferenceForm
 
 
-class CreateConferenceMutation(relay.ClientIDMutation):
-    class Input:
-        name = graphene.String(required=True)
-        holding_time = graphene.DateTime(required=True)
-        description = graphene.String(required=False)
-
-    errors = graphene.List(ErrorType)
-    conference = graphene.Field(ConferenceNode)
-
-    @classmethod
-    def mutate_and_get_payload(cls, root, info, **kwargs):
-        form = ConferenceForm(data=kwargs)
-        if not form.is_valid():
-            return UpdateConferenceMutation(errors=form.errors, conference=conference)
-        conference = form.save()
-        return UpdateConferenceMutation(errors=[], conference=conference)
-
-
-class UpdateConferenceMutation(relay.ClientIDMutation):
-    class Input:
-        id = graphene.ID()
-        name = graphene.String(required=True)
-        holding_time = graphene.DateTime(required=True)
-        description = graphene.String(required=False)
-
-    errors = graphene.List(ErrorType)
-    conference = graphene.Field(ConferenceNode)
-
-    @classmethod
-    def mutate_and_get_payload(cls, root, info, id, **kwargs):
-        conference = Conference.objects.get(pk=from_global_id(id)[1])
-        form = ConferenceForm(instance=conference, data=kwargs)
-        if not form.is_valid():
-            return UpdateConferenceMutation(errors=form.errors, conference=conference)
-        form.save()
-        return UpdateConferenceMutation(errors=[], conference=conference)
-
-
 class DeleteConferenceMutation(relay.ClientIDMutation):
     class Input:
         id = graphene.ID()
@@ -94,11 +56,9 @@ class DeleteConferenceMutation(relay.ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, **kwargs):
         conference = Conference.objects.get(pk=from_global_id(id)[1])
         conference.delete()
-        return UpdateConferenceMutation(errors=[], conference=conference)
+        return DeleteConferenceMutation(conference=conference)
 
 
 class Mutation(graphene.ObjectType):
     conference = ConferenceMutation.Field()
-    create_conference = CreateConferenceMutation.Field()
-    update_conference = UpdateConferenceMutation.Field()
-    delete_conference = DeleteConferenceMutation.Field()
+    # delete_conference = DeleteConferenceMutation.Field()
