@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     "graphene_django",
     "django_filters",
     "conference",
+    'rules',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +59,7 @@ ROOT_URLCONF = 'golden_arch.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ["templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,6 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+AUTH_USER_MODEL = 'user.HxUser'
 
 GRAPHENE = {
     "SCHEMA": "golden_arch.schema.schema",
