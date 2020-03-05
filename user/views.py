@@ -14,7 +14,6 @@ class LoginView(TemplateView):
     template_name = 'login.html'
 
     def post(self, request):
-        print(request.POST)
         form = AuthenticationForm(request, **{
             'data': request.POST,
             'files': request.FILES,

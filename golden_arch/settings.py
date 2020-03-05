@@ -124,6 +124,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'user.HxUser'
+LOGIN_URL = "/account/login"
 
 GRAPHENE = {
     "SCHEMA": "golden_arch.schema.schema",
