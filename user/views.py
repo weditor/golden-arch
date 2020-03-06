@@ -33,6 +33,7 @@ class UserInfoView(View):
             return JsonResponse({
                 "is_authenticated": True,
                 "user": {
+                    "username": user.username,
                     "email": user.email,
                     "name": user.name,
                     "date_of_enter": user.date_of_enter,

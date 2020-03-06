@@ -5,7 +5,8 @@ from user.models import HxUser
 class Conference(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True, default="")
-    creator = models.ForeignKey(HxUser, null=True, on_delete=models.SET_NULL)
+    creator = models.ForeignKey(HxUser, on_delete=models.CASCADE)
+    claim_user = models.ForeignKey(HxUser, related_name="claim_conferences", null=True, on_delete=models.SET_NULL)
     holding_time = models.DateTimeField()
 
     def __str__(self):

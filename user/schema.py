@@ -14,7 +14,7 @@ from .models import HxUser
 class HxUserNode(DjangoObjectType):
     class Meta:
         model = HxUser
-        fields = ("email", "name")
+        fields = ("email", "username", "name")
         # filter_fields = {
         #     "name": {"exact", "icontains", "istartswith"},
         #     "description": {"exact", "icontains"},

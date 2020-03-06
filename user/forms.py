@@ -15,7 +15,7 @@ class UserPasswordForm(forms.ModelForm):
 
     class Meta:
         model = HxUser
-        fields = ('email', 'name', 'date_of_enter', 'date_of_leave')
+        fields = ('email', "username", 'name', 'date_of_enter', 'date_of_leave')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -43,7 +43,7 @@ class SuperUserChangeForm(forms.ModelForm):
 
     class Meta:
         model = HxUser
-        fields = ('email', 'password', 'name', 'date_of_enter', 'date_of_leave', 'is_active', 'is_admin')
+        fields = ('email', "username", 'password', 'name', 'date_of_enter', 'date_of_leave', 'is_active', 'is_admin')
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
