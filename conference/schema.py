@@ -1,4 +1,5 @@
 
+from django_filters import FilterSet, OrderingFilter
 from graphene_django import DjangoObjectType, DjangoConnectionField
 from graphene_django.filter import DjangoFilterConnectionField
 from golden_arch.patch import FixedDjangoModelFormMutation
@@ -21,13 +22,24 @@ class ConferenceNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
-class ConferenceTopicNode(DjangoObjectType):
+class ConferenceTopicFilter(FilterSet):
     class Meta:
         model = ConferenceTopic
-        filter_fields = {
+        fields = {
             "name": {"exact", "icontains", "istartswith"},
             "description": {"exact", "icontains"},
         }
+
+    order_by = OrderingFilter(
+        fields=(
+            ('create_time', 'create_time'),
+        )
+    )
+
+class ConferenceTopicNode(DjangoObjectType):
+    class Meta:
+        model = ConferenceTopic
+        filterset_class = ConferenceTopicFilter
         interfaces = (relay.Node, )
 
 
@@ -61,6 +73,15 @@ class ConferenceMutation(FixedDjangoModelFormMutation):
 
 class ConferenceTopicMutation(FixedDjangoModelFormMutation):
     conference_topic = graphene.Field(ConferenceTopicNode)
+
+    @classmethod
+    def perform_mutate(cls, form, info):
+        obj = form.save(commit=False)
+        obj.creator = info.context.user
+        obj.save()
+        form.save_m2m()
+        kwargs = {cls._meta.return_field_name: obj}
+        return cls(errors=[], **kwargs)
 
     class Meta:
         form_class = ConferenceTopicForm
