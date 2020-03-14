@@ -17,14 +17,22 @@ from django.contrib import admin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import path, include
 from graphene_django.views import GraphQLView
-
+from django.conf import settings
 
 class LoginRequiredGraphQLView(LoginRequiredMixin, GraphQLView):
     pass
 
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
-    path('graphql/', LoginRequiredGraphQLView.as_view(graphiql=True)),
     path('user/', include("user.urls"))
 ]
+
+if settings.DEBUG:
+    urlpatterns.extend([
+        path('admin/', admin.site.urls),
+        path('graphql/', GraphQLView.as_view(graphiql=True)),
+    ])
+else:
+    urlpatterns.extend([
+        path('graphql/', LoginRequiredGraphQLView.as_view(graphiql=True)),
+    ])

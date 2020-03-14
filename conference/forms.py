@@ -13,5 +13,6 @@ class ConferenceTopicForm(forms.ModelForm):
     class Meta:
         model = ConferenceTopic
         fields = "__all__"
-        exclude = ("creator", )
+        exclude = ("creator", "like_user", "claim_user", "claim_time")
+        # read_only_fields = ("like_user",)
 

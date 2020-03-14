@@ -1,4 +1,6 @@
+# -*- encoding: utf-8 -*-
 
+from datetime import datetime
 from django_filters import FilterSet, OrderingFilter
 from graphene_django import DjangoObjectType, DjangoConnectionField
 from graphene_django.filter import DjangoFilterConnectionField
@@ -57,21 +59,8 @@ class ConferenceMutation(FixedDjangoModelFormMutation):
         form_class = ConferenceForm
 
 
-# class DeleteConferenceMutation(relay.ClientIDMutation):
-#     class Input:
-#         id = graphene.ID()
-
-#     errors = graphene.List(ErrorType)
-#     conference = graphene.Field(ConferenceNode)
-
-#     @classmethod
-#     def mutate_and_get_payload(cls, root, info, **kwargs):
-#         conference = Conference.objects.get(pk=from_global_id(id)[1])
-#         conference.delete()
-#         return DeleteConferenceMutation(conference=conference)
-
-
 class ConferenceTopicMutation(FixedDjangoModelFormMutation):
+    """增加或修改主题。当不带 ID 时, 为新增主题。"""
     conference_topic = graphene.Field(ConferenceTopicNode)
 
     @classmethod
@@ -87,7 +76,27 @@ class ConferenceTopicMutation(FixedDjangoModelFormMutation):
         form_class = ConferenceTopicForm
 
 
+class ClaimConferenceTopicMutation(relay.ClientIDMutation):
+    """某个用户认领主题"""
+    class Input:
+        id = graphene.ID(required=True)
+
+    conference_topic = graphene.Field(ConferenceTopicNode)
+    errors = graphene.List(ErrorType)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, id, **kwargs):
+        # print("ID is", id)
+        conference_topic: ConferenceTopic = ConferenceTopic.objects.get(pk=from_global_id(id)[1])
+        if conference_topic.claim_user:
+            return ClaimConferenceTopicMutation(conference_topic=conference_topic, errors=[{'error': ["任务已经被认领"]}])
+        conference_topic.claim_user = info.context.user
+        conference_topic.claim_time = datetime.now()
+        conference_topic.save()
+        return ClaimConferenceTopicMutation(conference_topic=conference_topic, errors=[])
+
+
 class Mutation(graphene.ObjectType):
     conference = ConferenceMutation.Field()
-    # delete_conference = DeleteConferenceMutation.Field()
     conference_topic = ConferenceTopicMutation.Field()
+    claim_conference_topic = ClaimConferenceTopicMutation.Field()
